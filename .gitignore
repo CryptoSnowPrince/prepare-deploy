@@ -3,3 +3,6 @@ node_modules
 pubkey
 seed
 .env.json
+id.json
+*.zip
+log
