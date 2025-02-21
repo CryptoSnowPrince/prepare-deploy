@@ -43,16 +43,16 @@ const args = process.argv.slice(2);
 if (args.length === 0) {
     console.log(`
 Usage:
-  Check ETH Balance:    node manage.js <rpc_url> checkETH
-  Check Token Balance:  node manage.js <rpc_url> checkToken <token_address> <decimals>
-  Send ETH:            node manage.js <rpc_url> sendETH <recipient_address> <amount>
-  Send Token:          node manage.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
+  Check ETH Balance:    node evm.js <rpc_url> checkETH
+  Check Token Balance:  node evm.js <rpc_url> checkToken <token_address> <decimals>
+  Send ETH:            node evm.js <rpc_url> sendETH <recipient_address> <amount>
+  Send Token:          node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
 
 Examples:
-  node manage.js https://rpc.com checkETH
-  node manage.js https://rpc.com checkToken 0xTokenContractAddress 18
-  node manage.js https://rpc.com sendETH 0xRecipientAddress 0.01
-  node manage.js https://rpc.com sendToken 0xRecipientAddress 10 0xTokenContractAddress 18
+  node evm.js https://rpc.com checkETH
+  node evm.js https://rpc.com checkToken 0xTokenContractAddress 18
+  node evm.js https://rpc.com sendETH 0xRecipientAddress 0.01
+  node evm.js https://rpc.com sendToken 0xRecipientAddress 10 0xTokenContractAddress 18
     `);
     process.exit(1);
 }
