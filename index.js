@@ -3,10 +3,26 @@ const fs = require('fs')
 require('dotenv').config();
 
 async function main() {
+    const args = process.argv.slice(2);
+    if (args.length === 0) {
+        console.log(`
+    Usage:
+      Create Env:    node index.js <my_project>
+    
+    Examples:
+      node index.js my_project
+        `);
+        return;
+    }
+    if (fs.existsSync(args[0])) {
+        console.log("FOLDER_OVER_WRITE DEPLOY");
+        return;
+    }
+    fs.mkdirSync(args[0]);
     // DEPLOY
-    const s_pubKeyFile = './pubkey'
-    const s_envFile = './.env'
-    const s_envJSONFile = './.env.json'
+    const s_pubKeyFile = `./${args[0]}/pubkey`
+    const s_envFile = `./${args[0]}/.env`
+    const s_envJSONFile = `./${args[0]}/.env.json`
     // TODO
     const account = Wallet.createRandom()
     if (fs.existsSync(s_pubKeyFile) || fs.existsSync(s_envFile)) {
