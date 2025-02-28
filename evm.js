@@ -17,9 +17,10 @@ dotenv.config();
 
 // Load .env.json if .env is missing
 let PRIVATE_KEY = process.env.PRIVATE_KEY;
-if (!PRIVATE_KEY && fs.existsSync("./.env.json")) {
+const filePath = ''
+if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
     try {
-        const envJson = JSON.parse(fs.readFileSync("./.env.json", "utf8"));
+        const envJson = JSON.parse(fs.readFileSync(`./${filePath}/.env.json`, "utf8"));
         PRIVATE_KEY = envJson.PRIVATE_KEY;
     } catch (error) {
         console.error("❌ Error reading .env.json:", error);
