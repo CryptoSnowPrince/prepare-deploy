@@ -26,6 +26,8 @@ let MNEMONIC_PASSWORD = process.env.MNEMONIC_PASSWORD;
 const filePath = ''; // TODO: set path to .env.json file
 const index = 0; // TODO: set index to point one of accounts that created by the mnemonic and passphrase
 const derivationPath = `m/44'/60'/0'/0/${index}`; // TODO: set derivation path
+const abi = []; // TODO: set abi
+const caArgs = []; // TODO: set caArgs
 
 if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
     try {
@@ -84,12 +86,14 @@ Usage:
   Check Token Balance:  node evm.js <rpc_url> checkToken <token_address> <decimals>
   Send ETH:            node evm.js <rpc_url> sendETH <recipient_address> <amount>
   Send Token:          node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
+  Send Tx:          node evm.js <rpc_url> sendTx <ca> <func> <value>
 
 Examples:
   node evm.js https://rpc.com checkETH
   node evm.js https://rpc.com checkToken 0xTokenContractAddress 18
   node evm.js https://rpc.com sendETH 0xRecipientAddress 0.01
   node evm.js https://rpc.com sendToken 0xRecipientAddress 10 0xTokenContractAddress 18
+  node evm.js https://rpc.com sendTx 0xCa functionName 0.01
     `);
     process.exit(1);
 }
@@ -237,6 +241,23 @@ async function main() {
         }
     }
 
+    async function sendTx(address, functionName, value) {
+        try {
+            const hash = await walletClient.writeContract({
+                address,
+                abi,
+                functionName,
+                args: caArgs,
+                account,
+                value: parseEther(value)
+            });
+
+            console.log(`✅ Tx sent! Transaction Hash: ${hash}`);
+        } catch (error) {
+            console.error("❌ Tx failed:", error);
+        }
+    }
+
     // Validate and execute transaction
     if (action === "checkETH") {
         checkETHBalance();
@@ -249,6 +270,9 @@ async function main() {
     } else if (action === "sendToken" && txArgs.length === 4) {
         const [recipient, amount, tokenAddress, decimals] = txArgs;
         sendToken(recipient, amount, tokenAddress, parseInt(decimals, 10));
+    } else if (action === "sendTx" && txArgs.length === 3) {
+        const [ca, func, value] = txArgs;
+        sendTx(ca, func, value);
     } else {
         console.error("❌ Invalid arguments! Use `node send.js` for help.");
     }
