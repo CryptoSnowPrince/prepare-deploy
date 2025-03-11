@@ -274,7 +274,7 @@ async function main() {
         const [ca, func, value] = txArgs;
         sendTx(ca, func, value);
     } else {
-        console.error("❌ Invalid arguments! Use `node send.js` for help.");
+        console.error("❌ Invalid arguments! Use `node evm.js` for help.");
     }
 }
 
