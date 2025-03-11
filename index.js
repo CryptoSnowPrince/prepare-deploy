@@ -6,16 +6,16 @@ async function main() {
     const args = process.argv.slice(2);
     if (args.length === 0) {
         console.log(`
-    Usage:
-      Create Env:    node index.js <my_project>
-    
-    Examples:
-      node index.js my_project
+Usage:
+    Create Env:    node index.js <my_project>
+
+Examples:
+    node index.js my_project
         `);
         return;
     }
     if (fs.existsSync(args[0])) {
-        console.log("FOLDER_OVER_WRITE DEPLOY");
+        console.log("FOLDER_OVER_WRITE");
         return;
     }
     fs.mkdirSync(args[0]);
@@ -26,7 +26,7 @@ async function main() {
     // TODO
     const account = Wallet.createRandom()
     if (fs.existsSync(s_pubKeyFile) || fs.existsSync(s_envFile)) {
-        console.log("FILE_OVER_WRITE DEPLOY")
+        console.log("FILE_OVER_WRITE")
         return
     }
     fs.writeFileSync(s_pubKeyFile, account.address);

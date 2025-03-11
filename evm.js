@@ -11,13 +11,22 @@ const {
 const { privateKeyToAccount } = require('viem/accounts');
 const dotenv = require('dotenv');
 const fs = require('fs')
+const bip39 = require('bip39');
+const HDKey = require('hdkey');
+const Wallet = require('ethereumjs-wallet').default;
 
 // Load .env if available
 dotenv.config();
 
 // Load .env.json if .env is missing
 let PRIVATE_KEY = process.env.PRIVATE_KEY;
-const filePath = ''
+const MNEMONIC = process.env.MNEMONIC;
+let MNEMONIC_PASSWORD = process.env.MNEMONIC_PASSWORD;
+
+const filePath = ''; // TODO: set path to .env.json file
+const index = 0; // TODO: set index to point one of accounts that created by the mnemonic and passphrase
+const derivationPath = `m/44'/60'/0'/0/${index}`; // TODO: set derivation path
+
 if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
     try {
         const envJson = JSON.parse(fs.readFileSync(`./${filePath}/.env.json`, "utf8"));
@@ -28,13 +37,40 @@ if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
     }
 }
 
-if (!PRIVATE_KEY) {
-    console.error("❌ Missing PRIVATE_KEY! Provide an .env or .env.json file.");
+if (!PRIVATE_KEY && !MNEMONIC) {
+    console.error("❌ Missing PRIVATE_KEY or MNEMONIC! Provide an .env or .env.json file.");
     process.exit(1);
 }
 
+if (!MNEMONIC_PASSWORD) {
+    MNEMONIC_PASSWORD = '';
+}
+
 // Create account from private key
-const account = privateKeyToAccount(`0x${PRIVATE_KEY.replace(/^0x/, '')}`);
+let account;
+if (MNEMONIC) {
+    try {
+        const seed = bip39.mnemonicToSeedSync(MNEMONIC, MNEMONIC_PASSWORD);
+        const hdwallet = HDKey.fromMasterSeed(seed);
+        const childKey = hdwallet.derive(derivationPath);
+        const wallet = Wallet.fromPrivateKey(childKey.privateKey);
+        const privateKey = wallet.getPrivateKey().toString('hex');
+        account = privateKeyToAccount(`0x${privateKey}`);
+        console.log(`✅ Account has been created with MNEMONIC and MNEMONIC_PASSWORD`);
+    } catch (error) {
+        console.error("❌ Error creating account with MNEMONIC and MNEMONIC_PASSWORD:", error);
+        process.exit(1);
+    }
+}
+
+if (!account && PRIVATE_KEY) {
+    try {
+        account = privateKeyToAccount(`0x${PRIVATE_KEY.replace(/^0x/, '')}`);
+        console.log(`✅ Account has been created with PRIVATE_KEY`);
+    } catch (error) {
+        console.error("❌ Error creating account with PRIVATE_KEY:", error);
+    }
+}
 
 console.log(`Account: ${account?.address}`)
 
