@@ -29,6 +29,28 @@ const derivationPath = `m/44'/60'/0'/0/${index}`; // TODO: set derivation path
 const abi = []; // TODO: set abi
 const caArgs = []; // TODO: set caArgs
 
+// Get CLI arguments
+const args = process.argv.slice(2);
+
+if (args.length === 0) {
+    console.log(`
+Usage:
+  Check ETH Balance:    node evm.js <rpc_url> checkETH
+  Check Token Balance:  node evm.js <rpc_url> checkToken <token_address> <decimals>
+  Send ETH:            node evm.js <rpc_url> sendETH <recipient_address> <amount>
+  Send Token:          node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
+  Send Tx:          node evm.js <rpc_url> sendTx <ca> <func> <value>
+
+Examples:
+  node evm.js https://rpc.com checkETH
+  node evm.js https://rpc.com checkToken 0xTokenContractAddress 18
+  node evm.js https://rpc.com sendETH 0xRecipientAddress 0.01
+  node evm.js https://rpc.com sendToken 0xRecipientAddress 10 0xTokenContractAddress 18
+  node evm.js https://rpc.com sendTx 0xCa functionName 0.01
+    `);
+    process.exit(1);
+}
+
 if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
     try {
         const envJson = JSON.parse(fs.readFileSync(`./${filePath}/.env.json`, "utf8"));
@@ -75,28 +97,6 @@ if (!account && PRIVATE_KEY) {
 }
 
 console.log(`Account: ${account?.address}`)
-
-// Get CLI arguments
-const args = process.argv.slice(2);
-
-if (args.length === 0) {
-    console.log(`
-Usage:
-  Check ETH Balance:    node evm.js <rpc_url> checkETH
-  Check Token Balance:  node evm.js <rpc_url> checkToken <token_address> <decimals>
-  Send ETH:            node evm.js <rpc_url> sendETH <recipient_address> <amount>
-  Send Token:          node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
-  Send Tx:          node evm.js <rpc_url> sendTx <ca> <func> <value>
-
-Examples:
-  node evm.js https://rpc.com checkETH
-  node evm.js https://rpc.com checkToken 0xTokenContractAddress 18
-  node evm.js https://rpc.com sendETH 0xRecipientAddress 0.01
-  node evm.js https://rpc.com sendToken 0xRecipientAddress 10 0xTokenContractAddress 18
-  node evm.js https://rpc.com sendTx 0xCa functionName 0.01
-    `);
-    process.exit(1);
-}
 
 // Extract arguments
 const [RPC_URL, action, ...txArgs] = args;
