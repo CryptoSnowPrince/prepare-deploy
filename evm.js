@@ -20,7 +20,7 @@ dotenv.config();
 
 // Load .env.json if .env is missing
 let PRIVATE_KEY = process.env.PRIVATE_KEY;
-const MNEMONIC = process.env.MNEMONIC;
+let MNEMONIC = process.env.MNEMONIC;
 let MNEMONIC_PASSWORD = process.env.MNEMONIC_PASSWORD;
 
 const filePath = ''; // TODO: set path to .env.json file
@@ -35,11 +35,11 @@ const args = process.argv.slice(2);
 if (args.length === 0) {
     console.log(`
 Usage:
-  Check ETH Balance:    node evm.js <rpc_url> checkETH
-  Check Token Balance:  node evm.js <rpc_url> checkToken <token_address> <decimals>
-  Send ETH:            node evm.js <rpc_url> sendETH <recipient_address> <amount>
-  Send Token:          node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
-  Send Tx:          node evm.js <rpc_url> sendTx <ca> <func> <value>
+  node evm.js <rpc_url> checkETH
+  node evm.js <rpc_url> checkToken <token_address> <decimals>
+  node evm.js <rpc_url> sendETH <recipient_address> <amount>
+  node evm.js <rpc_url> sendToken <recipient_address> <amount> <token_address> <decimals>
+  node evm.js <rpc_url> sendTx <ca> <func> <value>
 
 Examples:
   node evm.js https://rpc.com checkETH
@@ -51,10 +51,12 @@ Examples:
     process.exit(1);
 }
 
-if (!PRIVATE_KEY && fs.existsSync(`./${filePath}/.env.json`)) {
+if (!PRIVATE_KEY && !MNEMONIC && fs.existsSync(`./${filePath}/.env.json`)) {
     try {
-        const envJson = JSON.parse(fs.readFileSync(`./${filePath}/.env.json`, "utf8"));
+        const envJson = require(`./${filePath}/.env.json`)
         PRIVATE_KEY = envJson.PRIVATE_KEY;
+        MNEMONIC = envJson.MNEMONIC;
+        MNEMONIC_PASSWORD = envJson.MNEMONIC_PASSWORD;
     } catch (error) {
         console.error("❌ Error reading .env.json:", error);
         process.exit(1);
@@ -99,7 +101,7 @@ if (!account && PRIVATE_KEY) {
 console.log(`Account: ${account?.address}`)
 
 // Extract arguments
-const [RPC_URL, action, ...txArgs] = args;
+const [RPC_URL, cmd, ...cmdArgs] = args;
 
 // Initialize public client for read operations (balance, chain ID, etc.)
 const publicClient = createPublicClient({
@@ -259,19 +261,19 @@ async function main() {
     }
 
     // Validate and execute transaction
-    if (action === "checkETH") {
+    if (cmd === "checkETH") {
         checkETHBalance();
-    } else if (action === "checkToken" && txArgs.length === 2) {
-        const [tokenAddress, decimals] = txArgs;
+    } else if (cmd === "checkToken" && cmdArgs.length === 2) {
+        const [tokenAddress, decimals] = cmdArgs;
         checkTokenBalance(tokenAddress, parseInt(decimals, 10));
-    } else if (action === "sendETH" && txArgs.length === 2) {
-        const [recipient, amount] = txArgs;
+    } else if (cmd === "sendETH" && cmdArgs.length === 2) {
+        const [recipient, amount] = cmdArgs;
         sendETH(recipient, amount);
-    } else if (action === "sendToken" && txArgs.length === 4) {
-        const [recipient, amount, tokenAddress, decimals] = txArgs;
+    } else if (cmd === "sendToken" && cmdArgs.length === 4) {
+        const [recipient, amount, tokenAddress, decimals] = cmdArgs;
         sendToken(recipient, amount, tokenAddress, parseInt(decimals, 10));
-    } else if (action === "sendTx" && txArgs.length === 3) {
-        const [ca, func, value] = txArgs;
+    } else if (cmd === "sendTx" && cmdArgs.length === 3) {
+        const [ca, func, value] = cmdArgs;
         sendTx(ca, func, value);
     } else {
         console.error("❌ Invalid arguments! Use `node evm.js` for help.");
