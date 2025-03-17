@@ -48,7 +48,7 @@ Examples:
         console.log("FILE_OVER_WRITE")
         return
     }
-    fs.writeFileSync(s_pubKeyFile, account.address);
+    fs.writeFileSync(s_pubKeyFile, `EVM_PUBKEY="${account.address}"\nSOLANA_PUBKEY="${keypair.publicKey.toBase58()}"`);
 
     let envStr = `MNEMONIC="${MNEMONIC}"\n`;
     envStr += `PRIVATE_KEY="${account._signingKey().privateKey}"\n`;
