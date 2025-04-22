@@ -5,6 +5,7 @@ const fs = require('fs');
 
 let passphrase = ''; // TODO: set or input a mnemonic passphrase (optional for extra security)
 const derivationPath = `m/44'/60'/0'/0/0`; // TODO: set derivation path
+let pwdByCmd = false; // TODO: set to true if you want to use the password from command line
 
 const args = process.argv.slice(2);
 if (args.length < 2) {
@@ -18,7 +19,7 @@ Examples:
     process.exit(1)
 }
 
-if (!passphrase) {
+if (!pwdByCmd) {
     passphrase = args[0]
 }
 
