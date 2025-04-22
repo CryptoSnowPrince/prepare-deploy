@@ -3,8 +3,9 @@
 ## Solana
 
 ```
-solana-keygen new --outfile ./path/id.json 1> ./path/log
-solana address --keypair ./path/id.json
+cd path
+solana-keygen new --outfile ./id.json 1> ./log
+solana address --keypair ./id.json
 ```
 
 ```
