@@ -19,7 +19,7 @@ Examples:
     process.exit(1)
 }
 
-if (!pwdByCmd) {
+if (pwdByCmd) {
     passphrase = args[0]
 }
 
